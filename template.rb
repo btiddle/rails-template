@@ -1,12 +1,13 @@
-
 # Rails Application Templates
 # http://technology.stitchfix.com/blog/2014/01/06/rails-app-templates/
 
-gem 'foundation-rails'
-gem 'thin'
-gem 'bcrypt', '~> 3.1.7'
-
 gsub_file "Gemfile", /^gem\s+["']sqlite3["'].*$/,''
+
+gem_group :development, :test, :production do
+gem 'foundation-rails'
+  gem 'bcrypt', '~> 3.1.7'
+gem 'thin'
+end
 
 gem_group :development, :test do
   gem "rspec-rails"
@@ -35,6 +36,7 @@ run "bundle install"
 
 run "rails generate rails_footnotes:install"
 run "rails generate rspec:install"
+run "sudo env ARCHFLAGS='-arch x86_64' gem install pg"
 
 insert_into_file '.gitignore', "\n/config/database.yml\n/config/secrets.yml",
   after: "/tmp\n"
