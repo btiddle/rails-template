@@ -1,0 +1,194 @@
+===========================================================
+Initial Setup 
+===========================================================
+
+# To generate app using template file 
+#   -m, [--template=TEMPLATE]  # Path to application template
+#   -T, [--skip-test-unit]     # Skip Test::Unit files
+  cd ~/workspace
+  rails new <app-name-here> -T -m <template-file-name-here>
+
+# Generate a new sample app 
+  cd ~/workspace
+  rails new <app-name-here>
+  cd <app-name-here>
+
+# To install gem files
+# Rename Gemfile to Gemfile.ORIGINAL
+  mv Gemfile Gemfile.ORIGINAL
+# Copy desired Gemfile from github
+  copy https://github.com/btiddle/rails-template<desired-gemfile>  Gemfile
+# Run bundle applicatons
+  bundle install --without production
+# In case you’ve previously installed a version of a gem (such as 
+# Rails itself) other than the one specified by the Gemfile, it’s 
+# a good idea to update the gems with bundle update to make sure 
+# the versions match.
+  bundle update
+# List installed gem files
+  gem query --local
+
+# To install packages
+  rails generate foundation:install
+  rails generate rails_footnotes:install
+  bundle exec guard init  # to get it initially
+  # rails generate rspec:install
+
+# Update readme and rename from README.rdoc to README.md
+  edit README.rdoc
+  git mv README.rdoc README.md
+  # SKIP: git commit -am "Improve the README"
+
+# Edit /config/environments/production.rb
+  config.assets.compile = true
+
+===========================================================
+Git, Github and Heroku
+===========================================================
+
+# To initialize local machine repository and commit files
+# Edit .gitignore and add lines
+  TODO: Need to learn how to make production work when this is done. Skip for now.
+  /config/database.yml
+  /config/secrets.yml
+# Initialize local machine repository
+  git init
+  git add -A
+  git commit -m "Initialize repository"
+# To review the status of the repository
+  git stats
+# To restore local image to look like repository image
+  git checkout -f
+# To create a branch and switch to it
+  git checkout -b <branch-name>
+# To list branches and identify current branch pointing to
+  git branch
+# To merge branch into master
+  git checkout master
+  git merge <branch-name>
+# To delete a branch
+  git branch -d <branch-name>
+
+# To copy local repository to github
+  Create repository on github
+  git remote add origin https://github.com/btiddle/<epositiry-name>.git
+  git push -u origin <branch-name>   # Usually master 
+  # rort suggests: git push -u origin --all
+
+# To deploy app to Heroku
+# Initial creation
+  heroku login
+  heroku create <app-name>       # give a name; if blank will be assigned
+  git push heroku master         # note the URL produced (i.e. http://intense-plains-5236.herokuapp.com)
+# Whenever db is created or updated will need to rake
+  heroku run rake db:migrate
+# Whenever tests are updated, will need to rake test
+  bundle exec rake test
+# To deploy subsequent incremental updates to Heroku
+  git push heroku
+# To access applicaton
+  URL           # In browser
+  heroku open   # At command line 
+# To check Heroku production log 
+  heroku logs
+# To access console
+  heroku run console
+  Note.all
+  Note.new
+  exit
+  And play with app's functionality
+# To rename applicaion
+  heroku rename <new application name>
+
+===========================================================
+Models, Controlers and Scaffolds
+===========================================================
+
+# To run Rails server on local machine
+  cd to dir with app
+  rails server
+# To stop server
+  <Ctrl>-C
+
+# To load application in browser
+  http://localhost:3000
+
+# To create and configure models
+# Generate models (an example)
+  rails generate model Blog name:string description:text
+  rails generate model Post title:string content:text blog:references
+  rails generate model Message author:string message:text post:references
+# Add verificatons and associatons to models
+  Edit model files in app/models/
+# Create and populate db
+  rake db:migrate
+  # rort suggests: bundle exec rake db:migrate
+# To see list of other rake commands
+  bundle exec rake -T db  # just db
+  bundle exec rake -T     # all
+# To remove a model
+  rails destroy model <model-name>
+# To undo a single migration step
+  bundle exec rake db:rollback
+# To undo all migration steps
+  bundle exec rake db:migrate VERSION=0
+
+# To access db
+  rails console 
+  Hirb.enable()
+  Blog.all
+# Afer each rake db:migrate, restart server or use reload! in console
+  reload!
+
+# To create controller with default RESTful Routing (an example)
+# When a controler is created, its views are simultaniously created.
+  rails generate controller Surveys index new create show edit update destroy result
+# To remove a controller
+  rails destroy controller Surveys index new create show edit update destroy result
+
+# To use scaffold to create model, controller and views simultaniously
+  rails generate scaffold Post name:string title:string context:text
+
+# To configure root route and resources
+  edit /config/routes.rb (an example)
+    resources :surveys
+    get "/result" => 'surveys#result'
+    root 'surveys#new'
+  rake routes
+  rort suggests: bundle exec rake db:migrate
+
+===========================================================
+Tests
+===========================================================
+
+# To run the tests
+  bundle exec rake test
+
+# To use Gaurd to run tests
+  bundle exec guard       # must be installed and configred first
+# To run all the tests, hit return at the guard> prompt
+# To exit Guard, press Ctrl-D. 
+
+# To get all the routes
+  rake routes
+  helpers = Rails.application.routes.named_routes.helpers
+  http://localhost:3000/rails/routes (via Sextant gem)
+  wget --spider -r -nv -nd -np http://localhost:3209/ 2>&1 | ack -o '(?<=URL:)\S+'
+
+===========================================================
+Coding
+===========================================================
+# Assign a value to a variable
+  <% provide(:title, "Home") %>
+# Print variable value
+  <%= yield(:title) %>
+# Inserts contents of each page into the layout
+  <%= yield %>
+# Using test setup method and string interpolation
+  def setup
+    @base_title = "Ruby on Rails Tutorial Sample App"
+  end
+  ...
+  assert_select "title", "#{@base_title} | Home"
+
+
