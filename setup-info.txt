@@ -99,6 +99,8 @@ Git, Github and Heroku
   And play with app's functionality
 # To rename applicaion
   heroku rename <new application name>
+# To display Heroku online dashbard
+  www.heroku.com
 
 ===========================================================
 Models, Controlers and Scaffolds
