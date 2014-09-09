@@ -12,6 +12,8 @@ Initial Setup
   cd ~/workspace
   rails new <app-name-here>
   cd <app-name-here>
+# For Ruby on Rails Trutorial 3rd Edition while running 
+  rails _4.0.8_  new <app-name-here>
 
 # To install gem files
 # Rename Gemfile to Gemfile.ORIGINAL
@@ -39,8 +41,20 @@ Initial Setup
   git mv README.rdoc README.md
   # SKIP: git commit -am "Improve the README"
 
-# Edit /config/environments/production.rb
+# Edit config/environments/production.rb
   config.assets.compile = true
+
+# To add additional files to ignore
+  Added following to .gitingnore
+  # Ignore other unneeded files.
+  database.yml
+  doc/
+  *.swp
+  *~
+  .project
+  .DS_Store
+  .idea
+  .secret
 
 ===========================================================
 Git, Github and Heroku
@@ -49,8 +63,8 @@ Git, Github and Heroku
 # To initialize local machine repository and commit files
 # Edit .gitignore and add lines
   TODO: Learn how to make production work when this is done. Skip for now.
-  /config/database.yml
-  /config/secrets.yml
+  config/database.yml
+  config/secrets.yml
 # Initialize local machine repository
   git init
   git add -A
@@ -68,6 +82,11 @@ Git, Github and Heroku
   git merge <branch-name>
 # To delete a branch
   git branch -d <branch-name>
+# To fix check-in message of last commit
+  git commit --amend -m "Initialize repository"
+  git push -f
+# To add and comment
+  git commit -a -m "Update Gemfile.lock for Heroku"
 
 # To copy local repository to github
   Create repository at https://github.com/
@@ -167,7 +186,7 @@ Models, Controllers and Scaffolds
   rails generate scaffold Post name:string title:string context:text
 
 # To configure root route and resources
-  edit /config/routes.rb (an example)
+  edit config/routes.rb (an example)
     resources :surveys
     get "/result" => 'surveys#result'
     root 'surveys#new'
