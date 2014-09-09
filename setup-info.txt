@@ -12,8 +12,12 @@ Initial Setup
   cd ~/workspace
   rails new <app-name-here>
   cd <app-name-here>
-# For Ruby on Rails Trutorial 3rd Edition while running 
+# For Ruby on Rails Trutorial 3rd Edition while running Rails 4.0.8
   rails _4.0.8_  new <app-name-here>
+# To create app but don't generate test directory
+  rails _4.0.8_  new <app-name-here> --skip-test-unit
+# To open entire project in Sublime
+  subl .
 
 # To install gem files
 # Rename Gemfile to Gemfile.ORIGINAL
@@ -34,7 +38,7 @@ Initial Setup
   rails generate foundation:install
   rails generate rails_footnotes:install
   bundle exec guard init  # to get it initially
-  # rails generate rspec:install
+  rails generate rspec:install
 
 # Update readme and rename from README.rdoc to README.md
   edit README.rdoc
@@ -44,7 +48,7 @@ Initial Setup
 # Edit config/environments/production.rb
   config.assets.compile = true
 
-# To add additional files to ignore
+# To add additional files to ignore, added following to .gitingnore
   Added following to .gitingnore
   # Ignore other unneeded files.
   database.yml
@@ -55,16 +59,28 @@ Initial Setup
   .DS_Store
   .idea
   .secret
+# TODO: Learn how to make production work when this is done. Skip for now.
+  config/database.yml
+  config/secrets.yml
 
 ===========================================================
-Git, Github and Heroku
+Running app
+===========================================================
+
+# To run Rails server on local machine
+  cd to dir with app
+  rails server
+# To stop server
+  Ctrl-c
+
+# To load application in browser
+  http://localhost:3000
+
+===========================================================
+Git
 ===========================================================
 
 # To initialize local machine repository and commit files
-# Edit .gitignore and add lines
-  TODO: Learn how to make production work when this is done. Skip for now.
-  config/database.yml
-  config/secrets.yml
 # Initialize local machine repository
   git init
   git add -A
@@ -86,14 +102,20 @@ Git, Github and Heroku
   git commit --amend -m "Initialize repository"
   git push -f
 # To add and comment
-  git commit -a -m "Update Gemfile.lock for Heroku"
+  git commit -am "Update Gemfile.lock for Heroku"
 
+===========================================================
+Github
+===========================================================
 # To copy local repository to github
   Create repository at https://github.com/
   git remote add origin https://github.com/btiddle/<epositiry-name>.git
   git push -u origin <branch-name>   # Usually master 
   # rort suggests: git push -u origin --all
 
+===========================================================
+Heroku
+===========================================================
 # To deploy app to Heroku
 # Initial creation
   heroku login
@@ -106,8 +128,8 @@ Git, Github and Heroku
 # To deploy subsequent incremental updates to Heroku
   git push heroku
 # To access application
-  URL           # In browser
-  heroku open   # At command line 
+  URL           # in browser
+  heroku open   # at command line 
 # To check Heroku production log 
   heroku logs
 # To trail Heroku production logs
@@ -120,17 +142,21 @@ Git, Github and Heroku
   www.heroku.com
 
 ===========================================================
-Models, Controllers and Scaffolds
+Routes
 ===========================================================
 
-# To run Rails server on local machine
-  cd to dir with app
-  rails server
-# To stop server
-  Ctrl-c
+# To list all the routes
+  http://localhost:3000/rails/info/routes 
+                     # per Rails 4.0 routes and properties
+  http://localhost:3000/rails/routes
+                     # per Rails 4.0 routes only
+  rake routes
+  helpers = Rails.application.routes.named_routes.helpers
+  wget --spider -r -nv -nd -np http://localhost:3209/ 2>&1 | ack -o '(?<=URL:)\S+'
 
-# To load application in browser
-  http://localhost:3000
+===========================================================
+Model
+===========================================================
 
 # To create and configure models
 # Generate models (an example)
@@ -175,11 +201,22 @@ Models, Controllers and Scaffolds
 # To exit console
   exit or Ctrl-d
 
+===========================================================
+Controller
+===========================================================
+
 # To create controller with default RESTful Routing (an example)
 # Controller and views are simultaneously created
   rails g controller User index new create show edit update destroy result
+# To create controller without default test framework (because 
+# will use RSpec instead)
+  rails generate controller StaticPages home help --no-test-framework
 # To remove a controller
   rails destroy controller User index new create show edit update destroy result
+
+===========================================================
+Scaffold
+===========================================================
 
 # To create scaffold
 # Models, controller and views are simultaneously created
@@ -206,12 +243,6 @@ Tests
 # To exit Guard
   Ctrl-d
 
-# To get all the routes
-  rake routes
-  helpers = Rails.application.routes.named_routes.helpers
-  http://localhost:3000/rails/routes (via Sextant gem)
-  wget --spider -r -nv -nd -np http://localhost:3209/ 2>&1 | ack -o '(?<=URL:)\S+'
-
 ===========================================================
 Coding
 ===========================================================
@@ -228,4 +259,25 @@ Coding
   ...
   assert_select "title", "#{@base_title} | Home"
 
+===========================================================
+Post-install message from capybara:
+===========================================================
+IMPORTANT! Some of the defaults have changed in Capybara 2.1. If you're experiencing failures,
+please revert to the old behaviour by setting:
+
+    Capybara.configure do |config|
+      config.match = :one
+      config.exact_options = true
+      config.ignore_hidden_elements = true
+      config.visible_text_only = true
+    end
+
+If you're migrating from Capybara 1.x, try:
+
+    Capybara.configure do |config|
+      config.match = :prefer_exact
+      config.ignore_hidden_elements = false
+    end
+
+Details here: http://www.elabs.se/blog/60-introducing-capybara-2-1
 
