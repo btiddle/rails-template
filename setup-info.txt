@@ -112,11 +112,8 @@ Git, Github and Heroku
   heroku logs
 # To trail Heroku production logs
   heroku logs -t
-# To access console
+# To access console on Heroku
   heroku run console
-  Note.new
-  exit
-  And play with app's functionality
 # To rename application
   heroku rename <new-application-name>
 # To display Heroku online dashboard
@@ -130,7 +127,7 @@ Models, Controllers and Scaffolds
   cd to dir with app
   rails server
 # To stop server
-  <Ctrl>-C
+  Ctrl-c
 
 # To load application in browser
   http://localhost:3000
@@ -171,9 +168,12 @@ Models, Controllers and Scaffolds
                       # lists create statements for all tables
   ActiveRecord::Base.connection.execute ("SELECT sql FROM sqlite_master WHERE name = 'blogs'") 
                       # lists create statement for individual table
-
-# Afer each rake db:migrate, restart server or use reload! in console
+# Restart server or use reload! in console
+# - When the database changes, i.e. rake db:migrate
+# - When the model changes, i.e. edits to app/models
   reload!
+# To exit console
+  exit or Ctrl-d
 
 # To create controller with default RESTful Routing (an example)
 # Controller and views are simultaneously created
@@ -203,7 +203,8 @@ Tests
 # To use Guard to run tests
   bundle exec guard       # must be installed and configured first
 # To run all the tests, hit return at the guard> prompt
-# To exit Guard, press Ctrl-D. 
+# To exit Guard
+  Ctrl-d
 
 # To get all the routes
   rake routes
