@@ -208,8 +208,8 @@ Controller
 # To create controller with default RESTful Routing (an example)
 # Controller and views are simultaneously created
   rails g controller User index new create show edit update destroy result
-# To create controller without default test framework (because 
-# will use RSpec instead)
+# To create controller and to suppress the generation of the 
+# default RSpec tests (becasue will generate by hand)
   rails generate controller StaticPages home help --no-test-framework
 # To remove a controller
   rails destroy controller User index new create show edit update destroy result
@@ -231,7 +231,7 @@ Scaffold
   rort suggests: bundle exec rake db:migrate
 
 ===========================================================
-Tests
+Test: Not RSpec
 ===========================================================
 
 # To run the tests
@@ -242,6 +242,32 @@ Tests
 # To run all the tests, hit return at the guard> prompt
 # To exit Guard
   Ctrl-d
+
+===========================================================
+Test: RSpec
+===========================================================
+# Generate an integration test (request spec)
+  rails generate integration_test static_pages
+
+# Edit static_pages_spec.rb, replace with following
+  require 'spec_helper'
+
+  describe "Static pages" do
+
+    describe "Home page" do
+
+      it "should have the content 'Sample App'" do
+        visit '/static_pages/home'
+        expect(page).to have_content('Sample App')
+      end
+    end
+  end
+
+# Edit spec/spec_helper.rb, add following line
+  config.include Capybara::DSL
+
+# Run the the test
+  bundle exec rspec spec/requests/static_pages_spec.rb
 
 ===========================================================
 Coding
