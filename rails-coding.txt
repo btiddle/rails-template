@@ -1,0 +1,835 @@
+===========================================================
+Coding
+===========================================================
+# Assign a value to a variable
+  <% provide(:title, "Home") %>
+
+# Print variable value
+  <%= yield(:title) %>
+
+# Inserts contents of each page into the layout
+  <%= yield %>
+
+# Using test setup method and string interpolation
+  def setup
+    @base_title = "Ruby on Rails Tutorial Sample App"
+  end
+  ...
+  assert_select "title", "#{@base_title} | Home"
+
+# Double Quotes = Interpolation
+# Using the special syntax #{}
+  >> first_name = "Michael"
+  => "Michael"
+  >> last_name = "Hartl"
+  => "Hartl"
+  >> first_name + " " + last_name    # Concatenation, with a space in between
+  => "Michael Hartl"
+  >> "#{first_name} #{last_name}"    # The equivalent interpolation
+  => "Michael Hartl"
+
+# Single Quotes = Literal Value
+# Ruby won’t interpolate into single-quoted strings, but
+# instead returns the literal value, adding an addional 
+# backskasg where necesary.
+  >> '#{foo} bar'
+  => "\#{foo} bar"
+# another example 
+  >> '\n'       # A literal 'backslash n' combination
+  => "\\n"
+
+# puts automatically appends a newline character
+# print doesn't
+  >> print "foo"    # print string (same as puts, but without the newline)
+  foo=> nil
+  >> print "foo\n"  # Same as puts "foo"
+  foo
+  => nil
+
+# nil is an object (not a string)
+  >> nil.empty?
+  => NoMethodError: undefined method `empty?' for nil:NilClass
+  >> nil.to_s.empty?
+  => true
+  >> nil.nil?
+  => true
+
+# nil object is the only Ruby object that is false in a boolean 
+# context, apart from false itself.
+  >> if nil
+  >>   true
+  >> else
+  >>   false        # nil is false
+  >> end
+  => false
+
+ # All other Ruby objects are true, even 0:
+  >> if 0
+  >>   true        # 0 (and everything other than nil and false itself) is true
+  >> else
+  >>   false
+  >> end
+  => true
+
+# Understanding the full_title helper 
+  module ApplicationHelper
+    # Returns the full title on a per-page basis.       # Documentation comment
+    def full_title(page_title)                          # Method definition
+      base_title = "Ruby on Rails Tutorial Sample App"  # Variable assignment
+      if page_title.empty?                              # Boolean test
+        base_title                                      # Implicit return
+      else
+        "#{base_title} | #{page_title}"                 # String interpolation
+      end
+    end
+  end
+
+# string to array
+  >> "fooxbarxbazx".split('x')
+  => ["foo", "bar", "baz"]
+
+# array negative indices
+  >> a = [42, 8, 17]
+  => [42, 8, 17]
+  >> a[0]               # Ruby uses square brackets for array access.
+  => 42
+  >> a[1]
+  => 8
+  >> a[2]
+  => 17
+  >> a[-1]              # Indices can even be negative!
+  => 17
+
+# array synonyms indices 
+  >> a                  # Just a reminder of what 'a' is
+  => [42, 8, 17]
+  >> a.first
+  => 42
+  >> a.second
+  => 8
+  >> a.last
+  => 17
+  >> a.last == a[-1]    # Comparison using ==
+  => true
+
+# Add to arrays with the push method or its equivalent operator, <<
+# Ruby arrays can contain a mixture of different types
+  >> a.push(6)                  # Pushing 6 onto an array
+  => [42, 8, 17, 6]
+  >> a << 7                     # Pushing 7 onto an array
+  => [42, 8, 17, 6, 7]
+  >> a << "foo" << "bar"        # Chaining array pushes
+  => [42, 8, 17, 6, 7, "foo", "bar"]
+
+# array to string
+  >> a
+  => [42, 8, 17, 7, "foo", "bar"]
+  >> a.join                       # Join on nothing.
+  => "428177foobar"
+  >> a.join(', ')                 # Join on comma-space.
+  => "42, 8, 17, 7, foo, bar"
+
+# range to sring
+  >> 0..9
+  => 0..9
+  >> 0..9.to_a              # Oops, call to_a on 9.
+  NoMethodError: undefined method `to_a' for 9:Fixnum
+  >> (0..9).to_a            # Use parentheses to call to_a on the range.
+  => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# Ranges are useful for pulling out array elements:
+  >> a = %w[foo bar baz quux]         # Use %w to make a string array.
+  => ["foo", "bar", "baz", "quux"]
+  >> a[0..2]
+  => ["foo", "bar", "baz"]
+
+# A particularly useful trick is to use the index -1 at the end of 
+# the range to select every element from the starting point to the 
+# end of the array without explicitly having to use the array’s length:
+  >> a = (0..9).to_a
+  => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  >> a[2..(a.length-1)]               # Explicitly use the array's length.
+  => [2, 3, 4, 5, 6, 7, 8, 9]
+  >> a[2..-1]                         # Use the index -1 trick.
+  => [2, 3, 4, 5, 6, 7, 8, 9]
+
+# Ranges also work with characters:
+  >> ('a'..'e').to_a
+  => ["a", "b", "c", "d", "e"]
+
+# block version #1
+>> (1..5).each { |i| puts 2 * i }
+2
+4
+6
+8
+10
+=> 1..5
+
+# block verion #2
+>> (1..5).each do |i|
+?>   puts 2 * i
+>> end
+2
+4
+6
+8
+10
+=> 1..5
+
+# More block examples
+  >> 3.times { puts "Betelgeuse!" }   # 3.times takes a block with no variables.
+  "Betelgeuse!"
+  "Betelgeuse!"
+  "Betelgeuse!"
+  => 3
+  >> (1..5).map { |i| i**2 }          # The ** notation is for 'power'.
+  => [1, 4, 9, 16, 25]
+  >> %w[a b c]                        # Recall that %w makes string arrays.
+  => ["a", "b", "c"]
+  >> %w[a b c].map { |char| char.upcase }
+  => ["A", "B", "C"]
+  >> %w[A B C].map { |char| char.downcase }
+  => ["a", "b", "c"]
+
+# Generate random subdomains
+  ('a'..'z').to_a.shuffle[0..7].join
+
+===========================================================
+Hashes and symbols
+===========================================================
+# Hashes are essentially arrays that aren’t limited to integer indices.
+# Some languages sometimes call hashes associative arrays.
+# Hash indices, or keys, can be almost any object.
+
+# Example using strings
+  >> user = {}                          # {} is an empty hash.
+  => {}
+  >> user["first_name"] = "Michael"     # Key "first_name", value "Michael"
+  => "Michael"
+  >> user["last_name"] = "Hartl"        # Key "last_name", value "Hartl"
+  => "Hartl"
+  >> user["first_name"]                 # Element access is like arrays.
+  => "Michael"
+  >> user                               # A literal representation of the hash
+  => {"last_name"=>"Hartl", "first_name"=>"Michael"}
+
+# Hashes are indicated with curly braces containing key-value pairs; a pair 
+# of braces with no key-value pairs—i.e., {}—is an empty hash. It’s important 
+# to note that the curly braces for hashes have nothing to do with the curly 
+# braces for blocks. (Yes, this can be confusing.) Although hashes resemble 
+# arrays, one important difference is that hashes don’t generally guarantee 
+# keeping their elements in a particular order. If order matters, use an array.
+
+# Instead of defining hashes one item at a time using square brackets, it’s 
+# easy to use a literal representation with keys and values separated by =>, 
+# called a “hashrocket”. Usual Ruby convention of putting an extra space 
+# at the two ends of the hash
+  >> user = { "first_name" => "Michael", "last_name" => "Hartl" }
+  => {"last_name"=>"Hartl", "first_name"=>"Michael"}
+
+# So far we’ve used strings as hash keys, but in Rails it is much more 
+# common to use symbols instead. Symbols look kind of like strings, but 
+# prefixed with a colon instead of surrounded by quotes. For example, 
+# :name is a symbol. You can think of symbols as basically strings without 
+# all the extra baggage.
+
+# Define a user hash as follows
+  >> user = { :name => "Michael Hartl", :email => "michael@example.com" }
+  => {:name=>"Michael Hartl", :email=>"michael@example.com"}
+  >> user[:name]              # Access the value corresponding to :name.
+  => "Michael Hartl"
+  >> user[:password]          # Access the value of an undefined key.
+  => nil
+
+# Ruby 1.9 supports a new syntax for using symbols as hash keys.
+
+  >> h1 = { :name => "Michael Hartl", :email => "michael@example.com" }
+  => {:name=>"Michael Hartl", :email=>"michael@example.com"}
+
+  >> h2 = { name: "Michael Hartl", email: "michael@example.com" }
+  => {:name=>"Michael Hartl", :email=>"michael@example.com"}
+
+  >> h1 == h2
+  => true
+# But new style can't use dashes, thus
+  "data-turbolinks-track" => true    # valid
+  data-turbolinks-track: true        # invalid
+
+# Note that :name is valid on its own (as a standalone symbol) but name: 
+# has no meaning by itself. The bottom line is that :name => and name: 
+# are effectively the same only inside literal hashes, so that
+  { :name => "Michael Hartl" }
+  and
+  { name: "Michael Hartl" }
+  are equivalent, but otherwise you need to use :name (with the colon 
+  coming first) to denote a symbol.
+
+# Hash values can be virtually anything, even other hashes.
+  >> params = {}     # Define a hash called 'params' (short for 'parameters').
+  => {}
+  >> params[:user] = { name: "Michael Hartl", email: "mhartl@example.com" }
+  => {:name=>"Michael Hartl", :email=>"mhartl@example.com"}
+  >> params
+  => {:user=>{:name=>"Michael Hartl", :email=>"mhartl@example.com"}}
+  >>  params[:user][:email]
+  => "mhartl@example.com"
+
+# Hashes respond to the each method
+  >> flash = { success: "It worked!", error: "It failed." }
+  => {:success=>"It worked!", :error=>"It failed."}
+  >> flash.each do |key, value|
+  ?>   puts "Key #{key.inspect} has value #{value.inspect}"
+  >> end
+  Key :success has value "It worked!"
+  Key :error has value "It failed."
+
+# Note that the each method for arrays takes a block value. Where as the each
+# method for a hash iterates through the hash one key-value pair at a time.
+
+# The last example uses the useful inspect method, which returns
+# a string with a literal representation of the object it’s called on.
+  >> puts (1..5).to_a            # Put an array as a string.
+  1
+  2
+  3
+  4
+  5
+  >> puts (1..5).to_a.inspect    # Put a literal array.
+  [1, 2, 3, 4, 5]
+  >> puts :name, :name.inspect
+  name
+  :name
+  >> puts "It worked!", "It worked!".inspect
+  It worked!
+  "It worked!"
+
+# Using inspect to print an object is common enough that there’s a 
+# shortcut for it, the p function.
+  >> p :name             # Same as 'puts :name.inspect'
+  :name
+
+===========================================================
+Ruby classes
+===========================================================
+
+Constructors
+===========================================================
+
+# String literal constructor
+  >> s = "foobar"       # A literal constructor for strings using double quotes
+  => "foobar"
+  >> s.class
+  => String
+
+# String named constructor
+  >> s = String.new("foobar")   # A named constructor for a string
+  => "foobar"
+  >> s.class
+  => String
+  >> s == "foobar"
+  => true
+
+# Array constructor
+>> a = Array.new([1, 3, 2])
+=> [1, 3, 2]
+
+# Hashes, in contrast, are different. While the array constructor Array.new 
+# takes an initial value for the array, Hash.new takes a default value for the 
+# hash, which is the value of the hash for a nonexistent key.
+  >> h = Hash.new
+  => {}
+  >> h[:foo]          # Try to access the value for the nonexistent key :foo.
+  => nil
+  >> h = Hash.new(0)  # Arrange for nonexistent keys to return 0 instead of nil.
+  => {}
+  >> h[:foo]
+  => 0
+
+Class inheritance
+===========================================================
+
+# Find out the class hierarchy using the superclass method.
+  >> s = String.new("foobar")
+  => "foobar"
+  >> s.class                        # Find the class of s.
+  => String
+  >> s.class.superclass             # Find the superclass of String.
+  => Object
+  >> s.class.superclass.superclass  # Ruby 1.9 uses a new BasicObject base class
+  => BasicObject
+  >> s.class.superclass.superclass.superclass
+  => nil
+
+# palindrome
+  >> class Word < String             # Word inherits from String.
+  >>   # Returns true if the string is its own reverse.
+  >>   def palindrome?
+  >>     self == self.reverse        # self is the string itself.
+  >>   end
+  >> end
+  => nil
+
+# For more on Ruby classes and the self keyword, see the RailsTips post 
+# “Class and Instance Variables in Ruby”. 
+# http://www.railstips.org/blog/archives/2006/11/18/class-and-instance-variables-in-ruby/
+ 
+Modifying built-in classes
+===========================================================
+
+# Ruby lets allows you to modify build-in classes
+  >> class String
+  >>   # Returns true if the string is its own reverse.
+  >>   def palindrome?
+  >>     self == self.reverse
+  >>   end
+  >> end
+  => nil
+  >> "deified".palindrome?
+  => true
+
+# Modifying built-in classes is a powerful technique, but with great power 
+# comes great responsibility, and it’s considered bad form to add methods to 
+# built-in classes without having a really good reason for doing so.
+
+A user class
+===========================================================
+
+# attribute accessors 
+  attr_accessor :name, :email
+
+  class User
+    attr_accessor :name, :email               # attr_accessor 
+
+    def initialize(attributes = {})           # called when execute .new
+      @name  = attributes[:name]              # instance variables
+      @email = attributes[:email]             # instance variables
+    end
+
+    def formatted_email                       # method definition 
+      "#{@name} <#{@email}>"
+    end
+  end
+
+# Instance variables are automatically available in the views.
+
+# Instance variables are used for variables that need to be available 
+# throughout a Ruby class.
+
+# Instance variables always begin with an @ sign, and are nil when undefined.
+
+# Setting values
+  >> user = User.new( name: "Michael Hartl", email: "mhartl@example.com" )
+  => #<User:0x225167c @email="mhartl@example.com", @name="Michael Hartl">
+  >> user.formatted_email
+  => "Michael Hartl <mhartl@example.com>"
+
+# Find an online version of the Ruby API and read about the Hash method merge.
+
+# Follow the Ruby Koans17 to seek Ruby enlightenment. 
+  http://rubykoans.com
+
+===
+=== Chapter 5 Filling in the layout
+===
+
+The asset pipeline
+===========================================================
+
+What is the Asset Pipeline
+
+"The asset pipeline provides a framework to concatenate and minify or compress
+JavaScript and CSS assets. It also adds the ability to write these assets in 
+other languages and pre-processors such as CoffeeScript, Sass and ERB."
+  - Rails Guides (http://guides.rubyonrails.org/asset_pipeline.html)
+
+The asset pipeline involves lots of changes under Rails’ hood, but from the 
+perspective of a typical Rails developer there are three principal features to 
+understand: asset directories, manifest files, and preprocessor engines.
+
+Asset Directories
+  app/assets: assets specific to the present application
+  lib/assets: assets for libraries written by your dev team
+  vendor/assets: assets from third-party vendors
+
+   images
+   javascripts 
+   stylesheets
+
+   Using LESS with Bootstrap
+   http://bootstrapdocs.com/v2.0.4/docs/less.html#compiling
+
+   SASS
+   http://sass-lang.com
+
+Manifest Files
+  Tell Rails (via the Sprockets gem) how to combine CSS and Javascript assets 
+  (not images) to form single files.
+
+  For more details, see Rails Guides entry on the asset pipeline
+  http://guides.rubyonrails.org/asset_pipeline.html
+
+Preprocessor Engines
+  .scss for Sass
+  .coffee for CoffeeScript (see RailsCast on CoffeeScript basics)
+  .erb for embedded Ruby (ERb)
+  The preprocessor engines can be chained running right to left:
+    foobar.js.erb.coffee
+  
+With the asset pipeline, in production all the application stylesheets get 
+rolled into one CSS file (application.css), all the application JavaScript 
+code gets rolled into one JavaScript file (javascripts.js), and all such files
+(including those in lib/assets and vendor/assets) are minified to remove the 
+unnecessary whitespace that bloats file size. As a result, we get the best of
+both worlds: multiple nicely formatted files for programmer convenience, 
+with single optimized files in production.
+
+Syntactically awesome stylesheets
+
+Sass is a language for writing stylesheets that improves on CSS in many ways:
+nesting, variables and mixins.
+
+Rails asset pipeline automatically uses Sass to process files with the .scss
+extension
+
+Layout links
+
+===
+=== Chapter 6: Modeling users
+===
+
+The name comes from the “active record pattern”, identified and named in 
+Patterns of Enterprise Application Architecture by Martin Fowler.
+
+Note that, in contrast to the plural convention for controller names, model
+names are singular: a Users controller, but a User model.
+
+Note that User.create, rather than returning true or false, returns the User 
+object itself, which we can optionally assign to a variable.
+
+>> foo = User.create(name: "Foo", email: "foo@bar.com")
+
+Starting in Rails 4.0, the preferred method to find by attribute is to use the 
+find_by method passing the attribute as a hash.
+
+>> User.find_by_email("mhartl@example.com")    # or
+>> User.find_by(email: "mhartl@example.com")
+
+Update attributes
+Allows update to a single attribute while bypassing the validations
+
+>> user.email = "foo@bar.com"   # or
+>> user.update_attributes(name: "The Dude", email: "dude@abides.org") #or
+>> user.update_attribute(:name, "The Dude")
+
+The development and test databases are different. After database changes, be 
+sure to do "bundle exec rake test:prepare" to make sure db is up to date. Note
+that by default the test database gets rolled back at the end of each test, so
+each run of the tests starts with a fresh database.
+
+Check validity
+>> user.valid?
+
+Check error messages
+>> user.errors.full_messages
+
+------------------------
+RSpec boolean convention
+------------------------
+Whenever an object responds to a boolean method foo?, there is a corresponding
+test method called be_foo. In this case, we can test the result of calling:
+
+  @user.valid?
+
+  with
+
+  it "should be valid" do
+    expect(@user).to be_valid
+  end
+
+  or
+
+  subject { @user }
+  it { should be_valid }
+
+-----------------------------------
+Create an array and iterate over it
+-----------------------------------
+>> %w[foo bar baz]
+=> ["foo", "bar", "baz"]
+>> addresses = %w[user@foo.COM THE_US-ER@foo.bar.org first.last@foo.jp]
+=> ["user@foo.COM", "THE_US-ER@foo.bar.org", "first.last@foo.jp"]
+>> addresses.each do |address|
+?>   puts address
+>> end
+user@foo.COM
+THE_US-ER@foo.bar.org
+first.last@foo.jp
+
+-----------------------------------
+cross-site request forgery (CSRF)
+-----------------------------------
+The Stack Overflow entry on the Rails authenticity token
+Understand Rails Authenticity Token
+http://stackoverflow.com/questions/941594/understand-rails-authenticity-token
+
+-----------------------------------
+Mass aAsignment
+-----------------------------------
+- Initializing objects using a hash argument, for example:
+  user = User.new(name: "Michael Hartl", email: "mhartl@example.com")
+
+-----------------------------------
+Strong Parameters
+-----------------------------------
+- Specify which parameters are required and which ones are permitted. 
+
+  params.require(:user).permit(:name, :email, :password, :password_confirmation)
+
+- To facilitate the use of these parameters, it’s conventional to introduce an
+  auxiliary method called user_params that returns an appropriate 
+  initialization hash and use it in place of params[:user].
+
+  @user = User.new(user_params)
+
+  ...
+
+  private
+    def user_params
+      params.require(:user).permit(:name, :email, :password,
+                                   :password_confirmation)
+    end
+
+-----------------------------------
+Pluralize a method
+-----------------------------------
+<%= pluralize(@user.errors.count, "error") %>
+
+-----------------------------------
+redirect_to
+-----------------------------------
+- Can omit the user_url in the redirect, writing simply redirect_to @user to 
+  redirect to the user show page.
+
+  redirect_to @user
+
+-----------------------------------
+Generating tags
+-----------------------------------
+content_tag(name, content_or_options_with_block = nil, options = nil, 
+   escape = true, &block) Link
+
+Returns an HTML block tag of type name surrounding the content. Add HTML 
+attributes by passing an attributes hash to options. Instead of passing the 
+content as an argument, you can also use a block in which case, you pass your 
+options as the second parameter. Set escape to false to disable attribute value
+escaping.
+
+- Old way
+  <div class="alert alert-<%= key %>"><%= value %></div>
+
+- New way
+  <%= content_tag(:div, value, class: "alert alert-#{key}") %>
+
+-----------------------------------
+form_for
+-----------------------------------
+Infers that the action of the form should be to POST to the URL /users.
+
+  form_for(@user)
+
+Indicate the name of the resource and the corresponding URL.
+
+  form_for(:session, url: sessions_path)
+
+-----------------------------------
+helpers
+-----------------------------------
+By default, all the helpers are available in the views but not in the
+controllers. We need the methods from the Sessions helper in both places,
+so we have to include it explicitly.
+
+  class ApplicationController < ActionController::Base
+    protect_from_forgery with: :exception
+    include SessionsHelper
+  end
+
+-----------------------------------
+discussion of callbacks at the Rails Guides
+-----------------------------------
+http://guides.rubyonrails.org/v3.2.13/active_record_validations_callbacks.html
+
+
+-----------------------------------
+syntax for defining an assignment function
+-----------------------------------
+  self.current_user = user
+
+  ...
+
+  def current_user=(user)
+    @current_user = user
+  end
+
+
+-----------------------------------
+||= (“or equals”) assignment operator (short-circuit evaluation)
+-----------------------------------
+Effect is to set the @current_user instance variable to the user 
+corresponding to the remember token, but only if @current_user is undefined or 
+false.
+
+  @current_user ||= User.find_by(remember_token: remember_token)
+
+
+-----------------------------------
+Bootstrap components
+-----------------------------------
+http://getbootstrap.com/components/
+
+-----------------------------------
+create, create!
+-----------------------------------
+create! is just like the create method, except it raises an exception
+for an invalid user rather than returning false. This noisier construction
+makes debugging easier by avoiding silent errors.
+
+  User.create!(name: "Example User",
+               email: "example@railstutorial.org",
+               password: "foobar",
+               password_confirmation: "foobar")
+
+
+-----------------------------------
+Ruby on Rails Tutorial
+-----------------------------------
+name: Rails Tutorial
+email: example@railstutorial.org
+pw: foobar
+
+-----------------------------------
+http request with parameter
+-----------------------------------
+patch /users/17?admin=1&name=Benjamin
+
+
+-----------------------------------
+Destroy Without JavaScript
+-----------------------------------
+Web browsers can’t send DELETE requests natively, so Rails fakes them with
+JavaScript. This means that the delete links won’t work if the user has
+JavaScript disabled. If you must support non-JavaScript-enabled browsers
+you can fake a DELETE request using a form and a POST request, which works 
+even without JavaScript; see the RailsCast on “Destroy Without JavaScript”
+for details.
+- http://railscasts.com/episodes/77-destroy-without-javascript
+- http://railscasts.com/episodes/77-destroy-without-javascript-revised
+
+
+-----------------------------------
+let and let!
+-----------------------------------
+let variables are lazy, meaning that they only spring into existence when 
+referenced. 
+
+let! (is read “let bang”) forces the corresponding variable to come into 
+existence immediately.
+
+When to use rspec let()?
+- http://stackoverflow.com/questions/5359558/when-to-use-rspec-let
+
+-----------------------------------
+default_scope and lambda
+-----------------------------------
+class Micropost < ActiveRecord::Base
+  belongs_to :user
+  default_scope -> { order('created_at DESC') }
+  validates :user_id, presence: true
+end
+
+The order here is ’created_at DESC’, where DESC is SQL for “descending”, 
+i.e., in descending order from newest to oldest.
+
+As of Rails 4.0, all scopes take an anonymous function that returns the 
+criteria desired for the scope, mainly so that the scope need not be evaluated
+immediately, but rather can be loaded later on an as-needed basis (so-called
+lazy evaluation). In the present case, this function is
+
+-> { order('created_at DESC') }
+
+The syntax for this kind of object, called a Proc (procedure) or lambda, 
+is the arrow ->. It takes in a block and then evaluates it when called with 
+the call method. We can see how it works at the console:
+
+>> -> { puts "foo" }
+=> #<Proc:0x007fab938d0108@(irb):1 (lambda)>
+>> -> { puts "foo" }.call
+foo
+=> nil
+
+-----------------------------------
+Run lookups through the association
+-----------------------------------
+For security purposes it is a good practice always to run lookups through the
+association.
+- Access Control 101 in Rails and the Citibank Hack
+- http://www.rubyfocus.biz/blog/2011/06/15/access_control_101_in_rails_and_the_citibank-hack.html
+
+-----------------------------------
+XPath Syntax
+-----------------------------------
+http://www.w3schools.com/xpath/xpath_syntax.asp
+
+-----------------------------------
+Ajax
+-----------------------------------
+Ajax: A New Approach to Web Applications
+- original Ajax article 
+- http://www.adaptivepath.com/ideas/ajax-new-approach-web-applications/
+
+
+-----------------------------------
+#205 Unobtrusive Javascript
+-----------------------------------
+http://railscasts.com/episodes/205-unobtrusive-javascript
+
+
+-----------------------------------
+Selenium 
+-----------------------------------
+http://docs.seleniumhq.org/
+
+-----------------------------------
+Watir.com - Web Application Testing in Ruby
+-----------------------------------
+http://watir.com/
+
+
+-----------------------------------
+shorthand notation
+-----------------------------------
+- Using an ampersand & and a symbol corresponding to the method
+
+>> [1, 2, 3, 4].map { |i| i.to_s }
+=> ["1", "2", "3", "4"]
+versus
+>> [1, 2, 3, 4].map(&:to_s)
+=> ["1", "2", "3", "4"]
+
+Because so userfull, Active Record makes even shorter
+
+>> User.first.followed_users.map(&:id)
+versus
+>> User.first.followed_user_ids
+
+
+-----------------------------------
+Active Record subset
+-----------------------------------
+Hacking a subselect in ActiveRecord (select within a select)
+- http://pivotallabs.com/hacking-a-subselect-in-activerecord/
+
+
+
+
+

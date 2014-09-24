@@ -31,6 +31,8 @@ Initial Setup
 # good idea to update the gems with bundle update to make sure the 
 # versions match.
   bundle update
+# You should also restart the web server to ensure that the new gems are
+  loaded properly.
 # List installed gem files
   gem query --local
 
@@ -64,6 +66,15 @@ Initial Setup
   config/secrets.yml
 
 ===========================================================
+Environments
+===========================================================
+# console, server, and migrate commands specify non-default environments in 
+# three mutually incompatible ways
+  rails console production
+  rails server --environment production
+  bundle exec rake db:migrate RAILS_ENV=production
+
+===========================================================
 Running app
 ===========================================================
 
@@ -71,7 +82,7 @@ Running app
   cd to dir with app
   rails server
 # To stop server
-  Ctrl-c
+  Ctrl-C
 
 # To load application in browser
   http://localhost:3000
@@ -101,8 +112,10 @@ Git
 # To fix check-in message of last commit
   git commit --amend -m "Initialize repository"
   git push -f
-# To add and comment
+# To add (already known files) and commit
   git commit -am "Update Gemfile.lock for Heroku"
+# To rename a branch
+  git branch -m <oldname> <newname>
 
 ===========================================================
 Github
@@ -110,7 +123,7 @@ Github
 # To copy local repository to github
   Create repository at https://github.com/
   git remote add origin https://github.com/btiddle/<epositiry-name>.git
-  git push -u origin <branch-name>   # Usually master 
+  git push -u origin <branch-name>   # Usually master Kingshill Cars - 01732 871234 - Taxi and Private Car Hire in the Kingshill and Malling area
   # rort suggests: git push -u origin --all
 
 ===========================================================
@@ -120,11 +133,15 @@ Heroku
 # Initial creation
   heroku login
   heroku create <app-name>       # give a name; if blank one will be assigned
-  git push heroku master         # note the URL produced (i.e. http://intense-plains-5236.herokuapp.com)
+  git push heroku master         # note the URL produced 
+                                 # (i.e. http://<name>.herokuapp.com)
 # Whenever db is created or updated will need to rake
   heroku run rake db:migrate
-# Whenever tests are updated, will need to rake test
-  bundle exec rake test
+
+# After running a migration you’ll want to restart your app to reload the
+# schema and pickup any schema changes.
+  heroku restart 
+
 # To deploy subsequent incremental updates to Heroku
   git push heroku
 # To access application
@@ -134,6 +151,17 @@ Heroku
   heroku logs
 # To trail Heroku production logs
   heroku logs -t
+# To stop trailing Heroku production logs
+  Ctrl-C
+
+# To reset (drop) postgress db on Heroku
+  git push heroku
+  heroku pg:reset DATABASE
+  heroku run rake db:migrate
+  heroku run rake db:populate
+  heroku open
+# To get db information (limited to 1,000 rows in plan Hobby-dev)
+  heroku pg:info
 # To access console on Heroku
   heroku run console
 # To rename application
@@ -147,12 +175,37 @@ Routes
 
 # To list all the routes
   http://localhost:3000/rails/info/routes 
-                     # per Rails 4.0 routes and properties
+                     # per Rails 4.0 (routes and properties)
   http://localhost:3000/rails/routes
-                     # per Rails 4.0 routes only
+                     # per Ruby gem sextant (routes)
   rake routes
   helpers = Rails.application.routes.named_routes.helpers
   wget --spider -r -nv -nd -np http://localhost:3209/ 2>&1 | ack -o '(?<=URL:)\S+'
+
+# Example Routing
+  - See Rails Guides article on “Rails Routing from the Outside In”
+  - http://guides.rubyonrails.org/routing.html
+
+  # Std RESTful - /users/1
+  SampleApp::Application.routes.draw do
+    resources :users
+  end
+
+  # member - /users/1/following and /users/1/followers
+  SampleApp::Application.routes.draw do
+    resources :users do
+      member do
+        get :following, :followers
+      end
+    end
+  end
+
+  # collection - /users/tigers (to displau all tigers)
+  resources :users do
+    collection do
+      get :tigers
+    end
+  end
 
 ===========================================================
 Model
@@ -167,6 +220,7 @@ Model
   Edit model files in app/models/
 # Create and migrate db
   rake db:migrate
+  rort: bundle exec rake db:migrate
   # rort suggests: bundle exec rake db:migrate
 # To see list of other rake commands
   bundle exec rake -T db  # just db
@@ -178,8 +232,11 @@ Model
 # To undo all migration steps
   bundle exec rake db:migrate VERSION=0
 
+# To load console in sandbox, modifications art rolled back on exit
+  rails console --sandbox
+
 # To access db
-  rails console 
+  rails console
 # To load test environment in console (default is dev env)
   rails console test
   Hirb.enable
@@ -198,8 +255,52 @@ Model
 # - When the database changes, i.e. rake db:migrate
 # - When the model changes, i.e. edits to app/models
   reload!
+# To get unstuck within console
+  Ctrl-C
 # To exit console
-  exit or Ctrl-d
+  exit or Ctrl-D
+
+# To reset the database
+  bundle exec rake db:reset
+  bundle exec rake test:prepare
+  restart server
+
+# To reset the database and install prepopulated data
+# Edit lib/tasks/sample_data.rake
+ namespace :db do
+  desc "Fill database with sample data"
+
+  task populate: :environment do
+
+    admin = User.create!(name: "Example User",
+      email: "example@railstutorial.org",
+      password: "foobar",
+      password_confirmation: "foobar",
+      admin: true)
+
+    99.times do |n|
+      name  = Faker::Name.name
+      email = "example-#{n+1}@railstutorial.org"
+      password  = "password"
+      User.create!(name: name,
+        email: email,
+        password: password,
+        password_confirmation: password)
+    end
+
+    users = User.all(limit: 6)
+    50.times do
+      content = Faker::Lorem.sentence(5)
+      users.each { |user| user.microposts.create!(content: content) }
+    end
+
+  end
+end
+# Reinitialize db
+  bundle exec rake db:reset
+  bundle exec rake db:populate
+  bundle exec rake test:prepare
+  restart server (is required on some systems)
 
 ===========================================================
 Controller
@@ -219,7 +320,7 @@ Scaffold
 ===========================================================
 
 # To create scaffold
-# Models, controller and views are simultaneously created
+# Model, controller and views are simultaneously created
   rails generate scaffold Post name:string title:string context:text
 
 # To configure root route and resources
@@ -229,6 +330,7 @@ Scaffold
     root 'surveys#new'
   rake routes
   rort suggests: bundle exec rake db:migrate
+  TODO: CHECK TO SEE IF THIS IS MIGRAGE OR ROUTES?
 
 ===========================================================
 Test: Not RSpec
@@ -241,7 +343,7 @@ Test: Not RSpec
   bundle exec guard       # must be installed and configured first
 # To run all the tests, hit return at the guard> prompt
 # To exit Guard
-  Ctrl-d
+  Ctrl-D
 
 ===========================================================
 Test: RSpec
@@ -249,7 +351,7 @@ Test: RSpec
 # Generate an integration test (request spec)
   rails generate integration_test static_pages
 
-# Edit static_pages_spec.rb, replace with following
+# Edit spec/requests/static_pages_spec.rb, replace with following
   require 'spec_helper'
 
   describe "Static pages" do
@@ -266,24 +368,73 @@ Test: RSpec
 # Edit spec/spec_helper.rb, add following line
   config.include Capybara::DSL
 
-# Run the the test
+# Generate an integration test for user
+  rails generate integration_test user_pages
+
+  require 'spec_helper'
+
+  describe "User pages" do
+
+    subject { page }
+
+    describe "signup page" do
+      before { visit signup_path }
+
+      it { should have_content('Sign up') }
+      it { should have_title(full_title('Sign up')) }
+    end
+  end
+
+# Generate an integration test for microposts
+  rails generate integration_test micropost_pages
+
+# Whenever tests are updated, may need to rake test
+  bundle exec rake test
+
+# To run tests
+  bundle exec rake db:migrate
+  bundle exec rake test:prepare
   bundle exec rspec spec/requests/static_pages_spec.rb
+  bundle exec rspec spec/requests/
+  bundle exec rspec spec/
+  bundle exec rake spec
+  bundle exec rake 
+# The -e here arranges to run just the examples whose description strings 
+# match "signup page".
+  bundle exec rspec spec/requests/user_pages_spec.rb -e "signup page"
+
+  Up and Running with Custom RSpec Matchers
+  http://www.reactive.io/tips/2008/12/10/up-and-running-with-custom-rspec-matchers/
+
+  Project: RSpec Expectations 2.4
+  https://www.relishapp.com/rspec/rspec-expectations/v/2-4/docs/built-in-matchers/predicate-matchers#should-have-key-(based-on-hash#has-key?)
+
+  rspec_rails_cheetsheet.rb
+  https://gist.github.com/them0nk/2166525
+  https://gist.github.com/nerdinand/7787825
+
+  Simple tricks to clean up your Capybara tests
+  http://www.elabs.se/blog/51-simple-tricks-to-clean-up-your-capybara-tests
+
+  Project: RSpec Core 3.1
+  https://www.relishapp.com/rspec/rspec-core/docs/helper-methods/let-and-let
+
+  Alex Chaffee
+  http://alexchaffee.com/
+  - Interesting testing presentations HERE!
+    - For example - http://www.slideshare.net/alexchaffee/test-driven
 
 ===========================================================
-Coding
+RDoc
 ===========================================================
-# Assign a value to a variable
-  <% provide(:title, "Home") %>
-# Print variable value
-  <%= yield(:title) %>
-# Inserts contents of each page into the layout
-  <%= yield %>
-# Using test setup method and string interpolation
-  def setup
-    @base_title = "Ruby on Rails Tutorial Sample App"
-  end
-  ...
-  assert_select "title", "#{@base_title} | Home"
+# Ruby has a built-in rdoc client that will generate html pages from 
+# *.rdoc files:
+  rdoc README.rdoc -o ./tmp/doc
+  Try rdoc --help for more info.
+
+# SimpleMarkup is dead. Long live MarkDown (and Textile).
+  http://houseofpostmodern.wordpress.com/2010/02/02/simplemarkup-is-dead-long-live-markdown-and-textile/
+
 
 ===========================================================
 Post-install message from capybara:
@@ -306,4 +457,16 @@ If you're migrating from Capybara 1.x, try:
     end
 
 Details here: http://www.elabs.se/blog/60-introducing-capybara-2-1
+
+===========================================================
+markdown template
+===========================================================
+
+|     Project | Information                                                          |
+|------------:|:---------------------------------------------------------------------|
+| Domain:     | [Ruby on Rails Tutorial](https://www.railstutorial.org/) (rort)      |
+| Topic:      | Ruby on Rails Tutorial 2nd Editon (2ed)                              |
+| Assignment: | Sample Application (sample-app)                                      |
+| Repository: | rort-2ed-sample-app                                                  |
+
 

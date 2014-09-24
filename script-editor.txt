@@ -1,0 +1,9 @@
+Oh, okay! It's just a one liner, after all. Honestly, anyone can do this one.
+
+Just open Script Editor (it might be in Applications > Utilities, or in Applications > Applescript).
+
+When the program opens, type 'choose color' (without the quotation marks) into the window, as shown above.
+
+Save As.. choose Application from the list, and you'll have an application that you can click to bring up the Mac OS X Color Picker at any time.
+
+And that's all there is to it!
